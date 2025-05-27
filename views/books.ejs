@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книги - Книжный каталог</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/" class="logo">Книжный уголок</a>
+                <nav class="nav">
+                    <a href="/" class="nav-link">Главная</a>
+                    <a href="/books" class="nav-link">Книги</a>
+                    <a href="/authors" class="nav-link">Авторы</a>
+                    <% if (user) { %>
+                        <a href="/profile" class="nav-link">Профиль</a>
+                        <a href="/logout" class="nav-link">Выйти</a>
+                    <% } else { %>
+                        <a href="/login" class="nav-link">Войти</a>
+                        <a href="/register" class="nav-link">Регистрация</a>
+                    <% } %>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <h1>Каталог книг</h1>
+            
+            <div class="filters">
+                <form method="GET" action="/books">
+                    <input type="text" name="search" placeholder="Поиск по названию" value="<%= searchQuery || '' %>">
+                    <select name="genre">
+                        <option value="">Все жанры</option>
+                        <% genres.forEach(g => { %>
+                            <option value="<%= g %>" <%= g === selectedGenre ? 'selected' : '' %>><%= g %></option>
+                        <% }); %>
+                    </select>
+                    <select name="sort">
+                        <option value="title_asc" <%= sortBy === 'title_asc' ? 'selected' : '' %>>По названию (А-Я)</option>
+                        <option value="title_desc" <%= sortBy === 'title_desc' ? 'selected' : '' %>>По названию (Я-А)</option>
+                        <option value="year_asc" <%= sortBy === 'year_asc' ? 'selected' : '' %>>По году (старые)</option>
+                        <option value="year_desc" <%= sortBy === 'year_desc' ? 'selected' : '' %>>По году (новые)</option>
+                        <option value="rating_desc" <%= sortBy === 'rating_desc' ? 'selected' : '' %>>По рейтингу</option>
+                    </select>
+                    <button type="submit">Применить</button>
+                </form>
+            </div>
+
+            <div class="books-grid">
+                <% books.forEach(book => { %>
+                    <div class="book-card">
+                        <a href="/books/<%= book.id %>">
+                            <img src="/images/book-covers/<%= book.cover_image || 'default.jpg' %>" alt="<%= book.title %>" class="book-cover">
+                            <h3><%= book.title %></h3>
+                        </a>
+                        <p class="author">Автор: <%= book.author_name %></p>
+                        <p class="year">Год: <%= book.published_year %></p>
+                        <div class="rating">Рейтинг: <%= book.rating.toFixed(1) %></div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Книжный каталог. Все права защищены.</p>
+        </div>
+    </footer>
+</body>
+</html>

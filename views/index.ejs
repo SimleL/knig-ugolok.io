@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книжный каталог</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/" class="logo">Книжный уголок</a>
+                <nav class="nav">
+                    <a href="/" class="nav-link">Главная</a>
+                    <a href="/books" class="nav-link">Книги</a>
+                    <a href="/authors" class="nav-link">Авторы</a>
+                    <% if (user) { %>
+                        <a href="/profile" class="nav-link">Профиль</a>
+                        <a href="/logout" class="nav-link">Выйти</a>
+                    <% } else { %>
+                        <a href="/login" class="nav-link">Войти</a>
+                        <a href="/register" class="nav-link">Регистрация</a>
+                    <% } %>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+
+            <section class="new-books-section">
+                <h2>Новинки</h2>
+                <div class="books-grid">
+                    <% latestBooks.forEach(book => { %>
+                        <div class="book-card">
+                            <a href="/books/<%= book.id %>">
+                                <img src="/images/book-covers/<%= book.cover_image || 'default.jpg' %>" alt="<%= book.title %>" class="book-cover">
+                                <h3><%= book.title %></h3>
+                            </a>
+                            <div class="book-meta">
+                                <span class="rating">Рейтинг: <%= book.rating.toFixed(1) %></span>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </section>
+            
+            <section class="popular-section">
+                <h2>Популярные книги</h2>
+                <div class="books-grid">
+                    <% popularBooks.forEach(book => { %>
+                        <div class="book-card">
+                            <a href="/books/<%= book.id %>">
+                                <img src="/images/book-covers/<%= book.cover_image || 'default.jpg' %>" alt="<%= book.title %>" class="book-cover">
+                                <h3><%= book.title %></h3>
+                            </a>
+                            <div class="rating">Рейтинг: <%= book.rating.toFixed(1) %></div>
+                        </div>
+                    <% }); %>
+                </div>
+            </section>
+
+            <section class="popular-section">
+                <h2>Популярные авторы</h2>
+                <div class="authors-grid">
+                    <% popularAuthors.forEach(author => { %>
+                        <div class="author-card">
+                            <a href="/authors/<%= author.id %>">
+                                <img src="/images/author-photos/<%= author.photo || 'default.jpg' %>" alt="<%= author.name %>" class="author-photo">
+                                <h3><%= author.name %></h3>
+                            </a>
+                            <div class="rating">Рейтинг: <%= author.rating.toFixed(1) %></div>
+                        </div>
+                    <% }); %>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Книжный каталог. Все права защищены.</p>
+        </div>
+    </footer>
+</body>
+</html>

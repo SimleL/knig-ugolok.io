@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= book.title %> - Книжный каталог</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/" class="logo">Книжный уголок</a>
+                <nav class="nav">
+                    <a href="/" class="nav-link">Главная</a>
+                    <a href="/books" class="nav-link">Книги</a>
+                    <a href="/authors" class="nav-link">Авторы</a>
+                    <% if (user) { %>
+                        <a href="/profile" class="nav-link">Профиль</a>
+                        <a href="/logout" class="nav-link">Выйти</a>
+                    <% } else { %>
+                        <a href="/login" class="nav-link">Войти</a>
+                        <a href="/register" class="nav-link">Регистрация</a>
+                    <% } %>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="book-detail">
+                <img src="/images/book-covers/<%= book.cover_image || 'default.jpg' %>" 
+                     alt="<%= book.title %>" 
+                     class="book-cover-large">
+                
+                <div class="book-info">
+                    <h1 class="book-title"><%= book.title %></h1>
+                    <p class="book-author">Автор: <a href="/authors/<%= book.author_id %>"><%= book.author_name %></a></p>
+                    
+                    <div class="book-meta">
+                        
+                        <span>Год: <%= book.published_year %></span>
+                        <span>Жанр: <%= book.genre %></span>
+                        <span class="rating">Рейтинг: <%= book.rating.toFixed(1) %></span>
+                    </div>
+                    
+                    <div class="book-description">
+                        <h3>Описание</h3>
+                        <p><%= book.description %></p>
+                    </div>
+                    
+                    <% if (user) { %>
+                        <div class="favorite-action">
+                            <% if (isFavorite) { %>
+                                <button class="favorite-btn" data-book-id="<%= book.id %>" data-action="remove">Удалить из избранного</button>
+                            <% } else { %>
+                                <button class="favorite-btn" data-book-id="<%= book.id %>" data-action="add">Добавить в избранное</button>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="reviews">
+                <h2>Отзывы</h2>
+                
+                <% if (reviews.length > 0) { %>
+                    <% reviews.forEach(review => { %>
+                        <div class="review">
+                            <div class="review-header">
+                                <span class="review-author"><%= review.username %></span>
+                                <span class="review-rating">Оценка: <%= review.rating %></span>
+                            </div>
+                            <p class="review-date"><%= new Date(review.created_at).toLocaleDateString() %></p>
+                            <p class="review-comment"><%= review.comment %></p>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p>Пока нет отзывов. Будьте первым!</p>
+                <% } %>
+                
+                <% if (user) { %>
+                    <div class="review-form">
+                        <h3>Оставить отзыв</h3>
+                        <form method="POST" action="/books/<%= book.id %>/reviews">
+                            <div>
+                                <label for="rating">Оценка:</label>
+                                <select name="rating" id="rating" required>
+                                    <option value="5">5 - Отлично</option>
+                                    <option value="4">4 - Хорошо</option>
+                                    <option value="3">3 - Удовлетворительно</option>
+                                    <option value="2">2 - Плохо</option>
+                                    <option value="1">1 - Ужасно</option>
+                                </select>
+                            </div>
+                            <textarea name="comment" placeholder="Ваш отзыв..." required></textarea>
+                            <button type="submit">Отправить</button>
+                        </form>
+                    </div>
+                <% } else { %>
+                    <p><a href="/login">Войдите</a>, чтобы оставить отзыв</p>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Книжный каталог. Все права защищены.</p>
+        </div>
+    </footer>
+    <!-- Добавьте этот скрипт перед закрывающим тегом </body> -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteBtns = document.querySelectorAll('.favorite-btn');
+    
+    favoriteBtns.forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const bookId = this.dataset.bookId;
+            const action = this.dataset.action;
+            
+            try {
+                const response = await fetch(`/books/${bookId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=${action}`
+                });
+                
+                if (response.ok) {
+                    // Обновляем кнопку
+                    const newAction = action === 'add' ? 'remove' : 'add';
+                    const newText = action === 'add' ? 'Удалить из избранного' : 'Добавить в избранное';
+                    
+                    this.dataset.action = newAction;
+                    this.textContent = newText;
+                    
+                    // Добавляем анимацию для визуального подтверждения
+                    this.classList.add('clicked');
+                    setTimeout(() => this.classList.remove('clicked'), 300);
+                } else {
+                    console.error('Ошибка сервера:', response.status);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка. Пожалуйста, попробуйте ещё раз.');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

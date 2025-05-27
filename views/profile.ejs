@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - Книжный каталог</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/" class="logo">Книжный уголок</a>
+                <nav class="nav">
+                    <a href="/" class="nav-link">Главная</a>
+                    <a href="/books" class="nav-link">Книги</a>
+                    <a href="/authors" class="nav-link">Авторы</a>
+                    <% if (user) { %>
+                        <a href="/profile" class="nav-link">Профиль</a>
+                        <a href="/logout" class="nav-link">Выйти</a>
+                    <% } else { %>
+                        <a href="/login" class="nav-link">Войти</a>
+                        <a href="/register" class="nav-link">Регистрация</a>
+                    <% } %>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="profile">
+                <div class="profile-info">
+                    <h1>Профиль пользователя <%= user.username %></h1>
+                    <p>Email: <%= user.email %></p>
+                    <p>Дата регистрации: <%= new Date(user.created_at).toLocaleDateString() %></p>
+                </div>
+                
+                <div class="favorites-list">
+                    <h2>Избранные книги</h2>
+                    
+                    <% if (favoriteBooks.length > 0) { %>
+                        <div class="books-grid">
+                            <% favoriteBooks.forEach(book => { %>
+                                <div class="book-card">
+                                    <a href="/books/<%= book.id %>">
+                                        <img src="/images/book-covers/<%= book.cover_image || 'default.jpg' %>" alt="<%= book.title %>" class="book-cover">
+                                        <h3><%= book.title %></h3>
+                                    </a>
+                                    <p class="author">Автор: <%= book.author_name %></p>
+                                    <div class="rating">Рейтинг: <%= book.rating.toFixed(1) %></div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p>У вас пока нет избранных книг</p>
+                    <% } %>
+                </div>
+
+                <!-- Новый раздел с отзывами пользователя -->
+                <div class="reviews-section">
+                    <h2>Мои оценки и отзывы</h2>
+                    
+                    <% if (userReviews.length > 0) { %>
+                        <div class="review-list">
+                            <% userReviews.forEach(review => { %>
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <a href="/books/<%= review.book_id %>" class="review-book">
+                                            <%= review.book_title %>
+                                        </a>
+                                        <span class="review-rating">Оценка: <%= review.rating %></span>
+                                    </div>
+                                    <p class="review-date">
+                                        <%= new Date(review.created_at).toLocaleDateString('ru-RU', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        }) %>
+                                    </p>
+                                    <p class="review-text"><%= review.comment %></p>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <p class="no-reviews">Вы ещё не оставляли отзывов о книгах</p>
+                    <% } %>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Книжный каталог. Все права защищены.</p>
+        </div>
+    </footer>
+</body>
+</html>

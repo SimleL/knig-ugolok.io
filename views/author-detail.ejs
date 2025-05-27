@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= author.name %> - Книжный каталог</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="/" class="logo">Книжный уголок</a>
+                <nav class="nav">
+                    <a href="/" class="nav-link">Главная</a>
+                    <a href="/books" class="nav-link">Книги</a>
+                    <a href="/authors" class="nav-link">Авторы</a>
+                    <% if (user) { %>
+                        <a href="/profile" class="nav-link">Профиль</a>
+                        <a href="/logout" class="nav-link">Выйти</a>
+                    <% } else { %>
+                        <a href="/login" class="nav-link">Войти</a>
+                        <a href="/register" class="nav-link">Регистрация</a>
+                    <% } %>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="author-detail">
+                 <img src="/images/author-photos/<%= author.photo || 'default.jpg' %>" 
+                      alt="<%= author.name %>" 
+                      class="author-photo-large">
+                <div class="author-info">
+                    <h1><%= author.name %></h1>
+                    
+                    <div class="author-meta">
+                        <% if (author.birth_date) { %>
+                            <p>Дата рождения: <%= author.birth_date %></p>
+                        <% } %>
+                        <% if (author.death_date) { %>
+                            <p>Дата смерти: <%= author.death_date %></p>
+                        <% } %>
+                        <p>Количество книг: <%= author.books_count %></p>
+                        <p class="rating">Рейтинг: <%= author.rating.toFixed(1) %></p>
+                    </div>
+                    
+                    <div class="author-bio">
+                        <h3>Биография</h3>
+                        <p><%= author.bio %></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="author-books">
+                <h2>Книги автора</h2>
+                
+                <% if (books.length > 0) { %>
+                    <div class="books-grid">
+                        <% books.forEach(book => { %>
+                            <div class="book-card">
+                                <a href="/books/<%= book.id %>">
+                                    <img src="/images/book-covers/<%= book.cover_image || 'default.jpg' %>" alt="<%= book.title %>" class="book-cover">
+                                    <h3><%= book.title %></h3>
+                                </a>
+                                <div class="rating">Рейтинг: <%= book.rating.toFixed(1) %></div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <p>Нет книг этого автора в каталоге</p>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Книжный каталог. Все права защищены.</p>
+        </div>
+    </footer>
+</body>
+</html>
